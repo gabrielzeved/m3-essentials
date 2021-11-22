@@ -5,17 +5,26 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import { promisify } from 'util'
 import Listr from 'listr'
+//@ts-expect-error dont have typings
+import replace from 'string-replace-stream'
+import rename from './utils/rename'
+
 
 const access = promisify(fs.access);
 const copy = promisify(ncp)
+
+const defaultName = 'COMPONENT_NAME'
+
 async function copyTemplateFiles(options : any){
+    console.log(options.targetDirectory)
     return copy(options.templateDirectory, options.targetDirectory, {
+        transform: function (read, write) { read.pipe(replace(defaultName, options.name)).pipe(write) },
         clobber: false
     })
 }
 
 async function renameFiles(options: any){
-
+    rename(options.targetDirectory, defaultName, options.name);
 }
 
 export async function createComponent(options: any){

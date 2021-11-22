@@ -11,16 +11,6 @@ interface CLIOptions{
     name: string
 }
 
-enum Template{
-    CSS_HANDLES = 'css_handles',
-    CSS = 'css',
-    SASS = 'sass'
-}
-
-function isValidTemplate(template : string){
-   return (<any>Object).values(Template).includes(template);
-}
-
 function parseArgumentsIntoOptions(rawArgs: string[]){
     const args = arg({
         '--yes': Boolean,
@@ -30,13 +20,13 @@ function parseArgumentsIntoOptions(rawArgs: string[]){
     });
     return {
         skipPrompts: args['--yes'] || false,
-        name: args._[0],
-        template: args._[1]
+        template: args._[0],
+        name: args._[1] || ''
     }
 }
 
 async function promptForMissingOptions(options : CLIOptions){
-    const defaultTemplate = Template.CSS_HANDLES;
+    const defaultTemplate = 'css-handles';
 
     if(options.skipPrompts){
         return{
@@ -59,7 +49,7 @@ async function promptForMissingOptions(options : CLIOptions){
             type: 'list',
             name: 'template',
             message: 'Escolha um template para seu componente',
-            choices: (<any>Object).values(Template),
+            choices: ['css', 'sass', 'css-handles'],
             default: defaultTemplate
         })
     }
