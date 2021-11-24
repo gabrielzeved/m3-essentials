@@ -1,7 +1,6 @@
 import fs from 'fs'
 
 function rename(dir: string, placeholder: string, newValue: string){
-
     let files = fs.readdirSync(dir);
 
     for(let filename of files){
