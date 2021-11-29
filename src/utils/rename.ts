@@ -1,22 +1,40 @@
 import fs from 'fs'
+import path from 'path';
+import { shouldHave } from './validateFiles';
 
-function rename(dir: string, placeholder: string, newValue: string){
-    let files = fs.readdirSync(dir);
+function renameDir(dir: string, placeholder: string, newValue: string, recursive : boolean = true){
+
+    let newDir = dir;
+    if(dir.includes(placeholder)){
+        newDir = dir.replace(placeholder, newValue);
+        fs.renameSync(dir, newDir);
+    }
+
+    let files = fs.readdirSync(newDir);
 
     for(let filename of files){
         
-        let filePath = `${dir}/${filename}`;
+        let filePath = `${newDir}/${filename}`;
         let file = fs.statSync(filePath);
-        let newPath = `${dir}/${filename.replace(placeholder, newValue)}`
+        let newPath = `${newDir}/${filename.replace(placeholder, newValue)}`
 
-        if(filename.startsWith(placeholder)){
+        if(filename.includes(placeholder)){
             fs.renameSync(filePath, newPath);
         }
 
-        if(file.isDirectory()){
-            rename(newPath, placeholder, newValue);
+        if(file.isDirectory() && recursive){
+            renameDir(newPath, placeholder, newValue, recursive);
         }
     }
 }
 
-export default rename;
+function renameFile(filePath: string, placeholder: string, newValue: string){
+    shouldHave([filePath]);
+    let filename = path.basename(filePath)
+    if(filename.startsWith(placeholder)){
+        let newPath = filePath.replace(placeholder, newValue);
+        fs.renameSync(filePath, newPath);
+    }
+}
+
+export {renameDir, renameFile};

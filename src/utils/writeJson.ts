@@ -1,10 +1,7 @@
 import fs from 'fs';
+import { shouldHave } from './validateFiles';
 
 const writeInJson = function(filePath: string, object: any, overwrite : boolean = true){
-
-    if(!fs.existsSync(filePath)){
-        throw new Error(`Arquivo ${filePath} não encontrado!`);
-    }
 
     let file = fs.readFileSync(filePath);
 
